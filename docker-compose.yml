@@ -7,6 +7,7 @@ services:
       dockerfile: php-apache.dockerfile
     volumes:
       - ./www:/var/www/html
+      - ./db:/var/www/db
     ports:
       - "8000:80"
     environment: # TODO There are reports that host.docker.internal does not work on Linux. This should be confirmed/debunked.
