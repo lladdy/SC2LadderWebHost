@@ -23,4 +23,3 @@ class SchemaUpgrader
         // run next upgrade
     }
 }
-}
