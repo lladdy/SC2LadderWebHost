@@ -35,13 +35,13 @@ class SchemaManager
         }
 
         // UPGRADE STEPS
-        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in ./www/header.php
+        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
         // todo: start transaction
         $this->v_0_0_to_v_1_0($con);
         //$this->v_1_0_to_v_1_1($con);
         // Add steps here...
         // todo: end transaction
-        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in ./www/header.php
+        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
 
         $con->close();
     }
