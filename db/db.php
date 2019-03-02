@@ -16,6 +16,9 @@ class SchemaManager
         $this->createDatabase($con, $db_name);
         $con->select_db($db_name);
 
+        // Use the db name for the username and pw - devs can update this manually if they need more security.
+        $this->createWebappUser($con, $db_name, $db_name, $db_name);
+
         $this->createSchemaVariablesTable($con);
 
         $con->close();
@@ -64,6 +67,19 @@ class SchemaManager
 
     private function createDatabase(mysqli $con, $db_name) {
         if ($con->query("CREATE DATABASE " . mysqli_real_escape_string($con, $db_name)) === TRUE) {
+            echo "Database \"" . $db_name . "\" successfully created" . PHP_EOL;
+        }
+        else {
+            echo "Error: " . $con->error . PHP_EOL;
+        }
+    }
+
+    private function createWebappUser(mysqli $con, $db_name, $user_name, $user_pw) {
+        // Create a user with the same name as the db
+        if ($con->query("CREATE USER '" . mysqli_real_escape_string($con, $user_name) . "'@'localhost'
+        IDENTIFIED BY '" . mysqli_real_escape_string($con, $user_pw) . "'") === TRUE
+        && $con->query("GRANT SELECT,INSERT,UPDATE ON "
+                . mysqli_real_escape_string($con, $db_name) . ".* TO " . mysqli_real_escape_string($con, $db_name)) === TRUE) {
             echo "Database \"" . $db_name . "\" successfully created" . PHP_EOL;
         }
         else {
