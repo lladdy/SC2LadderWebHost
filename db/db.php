@@ -22,6 +22,7 @@ class SchemaManager
     }
 
     public function upgradeDb() {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // make mysqli throw exceptions
         require_once("dbconf.php");
         $con = new mysqli($host, $username, $password , $db_name);
 
@@ -30,8 +31,14 @@ class SchemaManager
             die("ERROR: Could not connect. " . mysqli_connect_error() . PHP_EOL);
         }
 
-        $this->v_1_0($con);
-        $this->v_1_1($con);
+        // UPGRADE STEPS
+        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in ./www/header.php
+        // todo: start transaction
+        $this->v_0_0_to_v_1_0($con);
+        //$this->v_1_0_to_v_1_1($con);
+        // Add steps here...
+        // todo: end transaction
+        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in ./www/header.php
 
         $con->close();
     }
@@ -74,12 +81,45 @@ class SchemaManager
         }
     }
 
-    private function v_1_0(mysqli $con) {
-        $con->multi_query(file_get_contents("./v_1_0/bootstrap.sql"));
+    private function getDatabaseVersion(mysqli $con) {
+        $result = $con->query("SELECT `value` FROM `schema_variables` WHERE `key` = 'database_version';");
+
+        if($result->num_rows == 0)
+            die("ERROR: 'database_version' schema variable returned no result.");
+
+        if($result->num_rows > 1)
+            die("ERROR: 'database_version' schema variable returned more than 1 result.");
+        return $result->fetch_assoc()["value"];
     }
 
-    private function v_1_1(mysqli $con) {
-        // run next upgrade
+    private function setDatabaseVersion(mysqli $con, $version) {
+        if (!($stmt = $con->prepare("UPDATE `schema_variables` SET `value` = ? WHERE `key` = 'database_version';"))) {
+            echo "Prepare failed: (" . $con->errno . ") " . $con->error;
+        }
+
+        if (!$stmt->bind_param("s", $version)) {
+            echo "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
+        }
+
+        if (!$stmt->execute()) {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        }
+    }
+
+    // UPGRADE STEPS
+
+    private function v_0_0_to_v_1_0(mysqli $con) {
+        if(getDatabaseVersion($con) == "0.0") {
+            $con->multi_query(file_get_contents("./v_1_0/bootstrap.sql"));
+            setDatabaseVersion($con, "1.0");
+        }
+    }
+
+    private function v_1_0_to_v_1_1(mysqli $con) {
+        if(getDatabaseVersion($con) == "1.0") {
+            // run next upgrade...
+            setDatabaseVersion($con, "0.1.1");
+        }
     }
 }
 
