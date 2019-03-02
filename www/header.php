@@ -42,15 +42,18 @@
 
 	}
 
-	function getDatabaseVersion(mysqli $con) {
-        $result = $con->query("SELECT `value` FROM `schema_variables` WHERE `key` = 'database_version';");
+    // If you update this, update getDatabaseVersion in the SchemaManager in /db/db.php as well
+    function getDatabaseVersion(mysqli $con) {
+        $result = $con->query("SELECT schema_version FROM `schema_variables`");
 
         if($result->num_rows == 0)
-            die("ERROR: 'database_version' schema variable returned no result.");
+            die("ERROR: schema_variables returned no result.");
 
         if($result->num_rows > 1)
-            die("ERROR: 'database_version' schema variable returned more than 1 result.");
-        return $result->fetch_assoc()["value"];
+            die("ERROR: schema_variables returned more than 1 row.");
+
+        $value = $result->fetch_assoc();
+        return $value["schema_version"];
     }
 
 	require_once("dbconf.php");

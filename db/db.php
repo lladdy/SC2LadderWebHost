@@ -92,24 +92,25 @@ class SchemaManager
         echo "Creating \"schema_variables\" table..." . PHP_EOL;
         $con->query(file_get_contents("./v_0_0/schema_variables.sql"));
         echo "Setting database version..." . PHP_EOL;
-        $con->query("INSERT INTO `schema_variables` (`key`, `value`) values ('database_version', '0.0')");
+        $con->query("INSERT INTO `schema_variables` (`schema_version`) values ('0.0')");
     }
 
+    // If you update this, update getDatabaseVersion in /www/header.php as well
     private function getDatabaseVersion(mysqli $con) {
-        $result = $con->query("SELECT `value` FROM `schema_variables` WHERE `key` = 'database_version'");
+        $result = $con->query("SELECT `schema_version` FROM `schema_variables`");
 
         if($result->num_rows == 0)
-            die("ERROR: 'database_version' schema variable returned no result.");
+            die("ERROR: schema_variables returned no result.");
 
         if($result->num_rows > 1)
-            die("ERROR: 'database_version' schema variable returned more than 1 result.");
-        $value = $result->fetch_assoc();
+            die("ERROR: schema_variables returned more than 1 row.");
 
-        return $value["value"];
+        $value = $result->fetch_assoc();
+        return $value["schema_version"];
     }
 
-    private function setDatabaseVersion(mysqli $con, $version) {
-        if (!($stmt = $con->prepare("UPDATE `schema_variables` SET `value` = ? WHERE `key` = 'database_version'"))) {
+    public function setDatabaseVersion(mysqli $con, $version) {
+        if (!($stmt = $con->prepare("UPDATE `schema_variables` SET `schema_version` = ?"))) {
             echo "Prepare failed: (" . $con->errno . ") " . $con->error;
         }
 
@@ -120,6 +121,12 @@ class SchemaManager
         if (!$stmt->execute()) {
             echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
         }
+
+        if ($stmt->affected_rows !== 1) {
+            echo "ERROR: Unexpected number of affected rows: " . $stmt->affected_rows;
+        }
+
+        $stmt->close();
     }
 
     // UPGRADE STEPS
