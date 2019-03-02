@@ -34,6 +34,8 @@ class SchemaManager
             die("ERROR: Could not connect. " . mysqli_connect_error() . PHP_EOL);
         }
 
+        echo "Running database upgrade..." . PHP_EOL;
+
         // UPGRADE STEPS
         // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
         // todo: start transaction
@@ -42,6 +44,9 @@ class SchemaManager
         // Add steps here...
         // todo: end transaction
         // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
+
+
+        echo "Database upgrade finished." . PHP_EOL;
 
         $con->close();
     }
@@ -87,22 +92,24 @@ class SchemaManager
         echo "Creating \"schema_variables\" table..." . PHP_EOL;
         $con->query(file_get_contents("./v_0_0/schema_variables.sql"));
         echo "Setting database version..." . PHP_EOL;
-        $con->query("INSERT INTO `schema_variables` (`key`, `value`) values ('database_version', '0.0');");
+        $con->query("INSERT INTO `schema_variables` (`key`, `value`) values ('database_version', '0.0')");
     }
 
     private function getDatabaseVersion(mysqli $con) {
-        $result = $con->query("SELECT `value` FROM `schema_variables` WHERE `key` = 'database_version';");
+        $result = $con->query("SELECT `value` FROM `schema_variables` WHERE `key` = 'database_version'");
 
         if($result->num_rows == 0)
             die("ERROR: 'database_version' schema variable returned no result.");
 
         if($result->num_rows > 1)
             die("ERROR: 'database_version' schema variable returned more than 1 result.");
-        return $result->fetch_assoc()["value"];
+        $value = $result->fetch_assoc();
+
+        return $value["value"];
     }
 
     private function setDatabaseVersion(mysqli $con, $version) {
-        if (!($stmt = $con->prepare("UPDATE `schema_variables` SET `value` = ? WHERE `key` = 'database_version';"))) {
+        if (!($stmt = $con->prepare("UPDATE `schema_variables` SET `value` = ? WHERE `key` = 'database_version'"))) {
             echo "Prepare failed: (" . $con->errno . ") " . $con->error;
         }
 
@@ -118,16 +125,17 @@ class SchemaManager
     // UPGRADE STEPS
 
     private function v_0_0_to_v_1_0(mysqli $con) {
-        if(getDatabaseVersion($con) == "0.0") {
+        if($this->getDatabaseVersion($con) == "0.0") {
             $con->multi_query(file_get_contents("./v_1_0/bootstrap.sql"));
-            setDatabaseVersion($con, "1.0");
+            while($con->next_result()); // Important! flush results from previous multiquery, else setDatabaseVersion won't work.
+            $this->setDatabaseVersion($con, "1.0");
         }
     }
 
     private function v_1_0_to_v_1_1(mysqli $con) {
-        if(getDatabaseVersion($con) == "1.0") {
+        if($this->getDatabaseVersion($con) == "1.0") {
             // run next upgrade...
-            setDatabaseVersion($con, "0.1.1");
+            $this->setDatabaseVersion($con, "0.1.1");
         }
     }
 }
