@@ -75,26 +75,19 @@ class SchemaManager
     }
 
     private function createWebappUser(mysqli $con, $db_name, $user_name, $user_pw) {
+        echo "Creating \"" . $user_name . "\" user..." . PHP_EOL;
         // Create a user with the same name as the db
-        if ($con->query("CREATE USER '" . mysqli_real_escape_string($con, $user_name) . "'@'localhost'
-        IDENTIFIED BY '" . mysqli_real_escape_string($con, $user_pw) . "'") === TRUE
-        && $con->query("GRANT SELECT,INSERT,UPDATE ON "
-                . mysqli_real_escape_string($con, $db_name) . ".* TO " . mysqli_real_escape_string($con, $db_name)) === TRUE) {
-            echo "Database \"" . $db_name . "\" successfully created" . PHP_EOL;
-        }
-        else {
-            echo "Error: " . $con->error . PHP_EOL;
-        }
+        $con->query("CREATE USER '" . mysqli_real_escape_string($con, $user_name) . "' IDENTIFIED BY '" . mysqli_real_escape_string($con, $user_pw) . "'");
+
+        echo "Applying user permissions..." . PHP_EOL;
+        $con->query("GRANT SELECT,INSERT,UPDATE ON " . mysqli_real_escape_string($con, $db_name) . ".* TO '" . mysqli_real_escape_string($con, $user_name) . "'");
     }
 
     private function createSchemaVariablesTable(mysqli $con) {
-        if ($con->query(file_get_contents("./v_0_0/schema_variables.sql")) === TRUE
-        && $con->query("INSERT INTO `schema_variables` (`key`, `value`) values ('database_version', '0.0');") === TRUE) {
-            echo "Table \"schema_variables\" successfully created" . PHP_EOL;
-        }
-        else {
-            echo "Error: " . $con->error . PHP_EOL;
-        }
+        echo "Creating \"schema_variables\" table..." . PHP_EOL;
+        $con->query(file_get_contents("./v_0_0/schema_variables.sql"));
+        echo "Setting database version..." . PHP_EOL;
+        $con->query("INSERT INTO `schema_variables` (`key`, `value`) values ('database_version', '0.0');");
     }
 
     private function getDatabaseVersion(mysqli $con) {
