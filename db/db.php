@@ -11,7 +11,7 @@ class SchemaManager
             die("ERROR: Could not connect. " . mysqli_connect_error());
 
         if($this->databaseAlreadyExists($con, $db_name))
-            die('ERROR: Database "' . $db_name.'" already exists.' . PHP_EOL);
+            die("ERROR: Database \"" . $db_name."\" already exists." . PHP_EOL);
 
         $this->createDatabase($con, $db_name);
         $con->select_db($db_name);
@@ -57,10 +57,10 @@ class SchemaManager
 
     private function createDatabase(mysqli $con, $db_name) {
         if ($con->query("CREATE DATABASE " . mysqli_real_escape_string($con, $db_name)) === TRUE) {
-            echo 'Database "' . $db_name . '" successfully created' . PHP_EOL;
+            echo "Database \"" . $db_name . "\" successfully created" . PHP_EOL;
         }
         else {
-            echo 'Error: '. $con->error . PHP_EOL;
+            echo "Error: " . $con->error . PHP_EOL;
         }
     }
 
@@ -72,7 +72,7 @@ class SchemaManager
             echo "Database version set to 0.0" . PHP_EOL;
         }
         else {
-            echo 'Error: '. $con->error . PHP_EOL;
+            echo "Error: " . $con->error . PHP_EOL;
         }
     }
 
