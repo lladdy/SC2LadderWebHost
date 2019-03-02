@@ -66,7 +66,10 @@ class SchemaManager
 
     private function createSchemaVariablesTable(mysqli $con) {
         if ($con->query(file_get_contents("./v_0_0/schema_variables.sql")) === TRUE) {
-            echo 'Table "schema_variables" successfully created' . PHP_EOL;
+            echo "Table \"schema_variables\" successfully created" . PHP_EOL;
+
+            $con->query("INSERT INTO `schema_variables` (`key`, `value`) values ('database_version', '0.0');");
+            echo "Database version set to 0.0" . PHP_EOL;
         }
         else {
             echo 'Error: '. $con->error . PHP_EOL;
