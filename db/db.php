@@ -50,7 +50,7 @@ class SchemaManager
         }
 
         $result = $stmt->get_result();
-        $row = mysqli_fetch_assoc($result);
+        $row = $result->fetch_assoc();
         $stmt->close();
         return $row["count"] > 0;
     }
