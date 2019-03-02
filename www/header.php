@@ -66,7 +66,7 @@
 
 	$dbVersion = getDatabaseVersion($link);
     if($dbVersion != EXPECTED_DATABASE_VERSION){
-        die("ERROR: Database is version " . $dbVersion . ". Expected version is " . EXPECTED_DATABASE_VERSION . ".");
+        die("ERROR: Unexpected database version \"" . $dbVersion . "\". Expected version is \"" . EXPECTED_DATABASE_VERSION . "\".");
     }
 ?>
 <html>
