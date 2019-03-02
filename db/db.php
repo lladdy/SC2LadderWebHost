@@ -36,17 +36,20 @@ class SchemaManager
 
         echo "Running database upgrade..." . PHP_EOL;
 
-        // UPGRADE STEPS
-        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
-        // todo: start transaction
-        $this->v_0_0_to_v_1_0($con);
-        //$this->v_1_0_to_v_1_1($con);
-        // Add steps here...
-        // todo: end transaction
-        // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
+        try {
+            // UPGRADE STEPS
+            // todo: implement upgrade step info messages
+            // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
+            $this->v_0_0_to_v_1_0($con);
+            //$this->v_1_0_to_v_1_1($con);
+            // Add steps here...
+            // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
 
-
-        echo "Database upgrade finished." . PHP_EOL;
+            echo "Database upgrade finished." . PHP_EOL;
+        } catch (Exception $e) {
+            echo "ERROR: Database upgrade failed! " . $e->getMessage() . PHP_EOL;
+            echo "The database is now in an unpredictable state!" . PHP_EOL;
+        }
 
         $con->close();
     }
