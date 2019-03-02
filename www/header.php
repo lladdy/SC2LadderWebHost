@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <?php
+    // Update this when the database version changes.
+    define('EXPECTED_DATABASE_VERSION', '1.0');
+
 	function GetRace($RaceId)
 	{
 		switch($RaceId)
@@ -38,6 +41,18 @@
 		return -1;
 
 	}
+
+	function getDatabaseVersion(mysqli $con) {
+        $result = $con->query("SELECT `value` FROM `schema_variables` WHERE `key` = 'database_version';");
+
+        if($result->num_rows == 0)
+            die("ERROR: 'database_version' schema variable returned no result.");
+
+        if($result->num_rows > 1)
+            die("ERROR: 'database_version' schema variable returned more than 1 result.");
+        return $result->fetch_assoc()["value"];
+    }
+
 	require_once("dbconf.php");
 	$link = new mysqli($host, $username, $password , $db_name);
 
@@ -45,6 +60,11 @@
 	if($link->connect_error){
 		die("ERROR: Could not connect. " . mysqli_connect_error());
 	}
+
+	$dbVersion = getDatabaseVersion($link);
+    if($dbVersion != EXPECTED_DATABASE_VERSION){
+        die("ERROR: Database is version " . $dbVersion . ". Expected version is " . EXPECTED_DATABASE_VERSION . ".");
+    }
 ?>
 <html>
     <head>
