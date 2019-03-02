@@ -135,7 +135,7 @@ class SchemaManager
     private function v_1_0_to_v_1_1(mysqli $con) {
         if($this->getDatabaseVersion($con) == "1.0") {
             // run next upgrade...
-            $this->setDatabaseVersion($con, "0.1.1");
+            $this->setDatabaseVersion($con, "1.1");
         }
     }
 }
