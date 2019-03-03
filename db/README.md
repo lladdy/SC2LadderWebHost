@@ -14,7 +14,7 @@ You can use root login details here.
 
 `php db.php boostrapdb`
 
-Running boostrapdb will create and configure a database and user, both named after whatever database name is in your `/db/dbconf.php`.
+Running boostrapdb will create and configure a database and user, both named after whatever database name is in your `/db/dbconf.php`. The user will also use a matching password.
 
 
 ### Upgrading an existing database

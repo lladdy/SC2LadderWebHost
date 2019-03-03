@@ -19,11 +19,12 @@ docker-compose.yml creates two containers and links them under the same network.
 2. Make sure docker-compose is installed by running `docker-compose --version`. I'm running version 1.16
 3. From the root directory run `docker-compose build`. Containers will be downloaded and built
 4. Run `docker-compose up` or `docker-compose up -d` if you want to run in detached mode (runs separately without console output)
-5. Using a MySql application (I recommend MySql Workbench) create a new database (schema) called 'sc2ladders' and import the sc2ladders.sql SQL dump into it. Default MySql connection settings are:
-    - Port: 3306 (To change the port mapping change the first port for the mysql container in docker-compose.yml)
+5. Setup and run a [bootstrapdb command](./db/README.md) to create and configure a new database.
+
+    Default MySql connection settings are:
     - Username: root
     - Password: root (change in the docker-compose.yml if you want extra security)
-6. Copy the ./www/dbconf-example.php file to ./www/dbconf.php and update any required connection details.
+6. Copy the /www/dbconf-example-docker.php file to /www/dbconf.php - all details within should already be correct.
 6. Navigate to [http://localhost:8000](http://localhost:8000) and you should see a working site. Changes are synced in real-time as you update files.
 
 # DB Versioning
