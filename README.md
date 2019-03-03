@@ -6,4 +6,4 @@ Very basic upload and results page.  I'm terrible at making things look nice, so
 
 ## How to contribute and/or setup the development environment
 
-See CONTRIBUTING.md
+See [CONTRIBUTING.md](CONTRIBUTING.md)

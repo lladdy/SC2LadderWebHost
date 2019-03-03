@@ -42,7 +42,7 @@ class SchemaManager
             // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
             $this->v_0_0_to_v_1_0($con);
             //$this->v_1_0_to_v_1_1($con);
-            // Add steps here...
+            // Add new steps here...
             // !!!!ATTENTION!!!! Don't forget to update the EXPECTED_DATABASE_VERSION in /www/header.php
 
             echo "Database upgrade finished." . PHP_EOL;
@@ -144,7 +144,7 @@ class SchemaManager
 
     private function v_1_0_to_v_1_1(mysqli $con) {
         if($this->getDatabaseVersion($con) == "1.0") {
-            // run next upgrade...
+            // run new upgrade here...
             $this->setDatabaseVersion($con, "1.1");
         }
     }

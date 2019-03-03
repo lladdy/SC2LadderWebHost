@@ -1,3 +1,6 @@
+# Improving these instructions
+If you encounter problems with these instructions, please consider updating them with corrections or at least creating a github issue so they get addressed.
+
 # Setting up local development using Docker
 
 To make it easier and save time it's advisable you use Docker for quickly setting up a local environment. You're required to have up to date Docker and docker-compose installed locally.
@@ -22,3 +25,6 @@ docker-compose.yml creates two containers and links them under the same network.
     - Password: root (change in the docker-compose.yml if you want extra security)
 6. Copy the ./www/dbconf-example.php file to ./www/dbconf.php and update any required connection details.
 6. Navigate to [http://localhost:8000](http://localhost:8000) and you should see a working site. Changes are synced in real-time as you update files.
+
+# DB Versioning
+See [./db/README.md](./db/README.md)
