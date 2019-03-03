@@ -2,9 +2,7 @@
 
 class SchemaManager
 {
-    public function bootstrapDb() {
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // make mysqli throw exceptions
-        require_once("dbconf.php");
+    public function bootstrapDb($host, $username, $password, $db_name) {
         $con = new mysqli($host, $username, $password);
         // check connection
         if($con->connect_error)
@@ -22,12 +20,13 @@ class SchemaManager
         $this->createSchemaVariablesTable($con);
 
         $con->close();
+
+        // Now run an upgrade to the latest version
+        $this->upgradeDb($host, $username, $password, $db_name);
     }
 
-    public function upgradeDb() {
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // make mysqli throw exceptions
-        require_once("dbconf.php");
-        $con = new mysqli($host, $username, $password , $db_name);
+    public function upgradeDb($host, $username, $password, $db_name) {
+        $con = new mysqli($host, $username, $password, $db_name);
 
         // Check connection
         if($con->connect_error){
@@ -160,14 +159,17 @@ function printUsage() {
 }
 
 
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // make mysqli throw exceptions
+require_once("dbconf.php");
+
 if($argc==2) {
     $schemaManager = new SchemaManager();
     switch ($argv[1]) {
         case "bootstrapdb":
-            $schemaManager->bootstrapDb();
+            $schemaManager->bootstrapDb($host, $username, $password, $db_name);
             break;
         case "upgradedb":
-            $schemaManager->upgradeDb();
+            $schemaManager->upgradeDb($host, $username, $password, $db_name);
             break;
     }
 } else {
